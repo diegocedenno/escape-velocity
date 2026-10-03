@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>escape-velocity — generador de contraseñas</title>
+  <meta name="description" content="Generador de contraseñas: la entropía se convierte en la velocidad de un cohete que intenta alcanzar los 11,2 km/s de escape.">
+  <meta name="theme-color" content="#0d1117">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="assets/starfield.js"></script>
+  <script defer src="js/generator.js"></script>
+  <script defer src="js/flight.js"></script>
+  <script defer src="js/scene.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="page-head">
+      <a class="brand" href="./" aria-label="escape-velocity, inicio">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="5" cy="33" r="15" fill="#58a6ff"/>
+          <path d="M14 22 C17.5 15.5 20.5 12 24 9" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="1.5 3.2" stroke-linecap="round"/>
+          <g transform="translate(26.2 6.8) rotate(48)">
+            <path d="M-1.6 3.2 L0 8 L1.6 3.2 Z" fill="#ff7a3d"/>
+            <path d="M0 -5.4 C2.6 -2.8 2.8 0.6 2.8 3.4 H-2.8 C-2.8 0.6 -2.6 -2.8 0 -5.4 Z" fill="#f4f6f8"/>
+          </g>
+        </svg>
+        escape-velocity
+      </a>
+      <p class="console" id="status" role="status">status: <b>en la plataforma</b></p>
+    </header>
+
+    <main class="layout">
+      <h1 class="sr-only">escape-velocity: generador de contraseñas con velocidad de escape</h1>
+
+      <section class="stage" id="stage" data-state="suborbital" aria-label="Lanzamiento">
+        <p class="stage-hud console" id="telemetry" aria-hidden="true">v: <b>0,0 km/s</b> · en la plataforma</p>
+        <div class="stage-view">
+          <svg class="stage-svg" id="sky" viewBox="0 0 668 560" role="img" aria-label="Un cohete despega de un planeta e intenta alcanzar la velocidad de escape">
+            <defs>
+              <clipPath id="pluto-clip"><circle cx="60" cy="60" r="52"/></clipPath>
+              <radialGradient id="pluto-light" cx="36%" cy="30%" r="80%">
+                <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+                <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
+                <stop offset="1" stop-color="#0d1117" stop-opacity="0.5"/>
+              </radialGradient>
+              <radialGradient id="planet-fill" gradientUnits="userSpaceOnUse" cx="334" cy="1244" r="768">
+                <stop id="planet-stop-deep" offset="0.84" stop-color="#0d1117"/>
+                <stop id="planet-stop-mid" offset="0.96" stop-color="#161b22"/>
+                <stop offset="1" stop-color="#222c38"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Plutón, lejos: el destino de los que escapan -->
+            <g id="pluto" class="pluto">
+              <circle class="orbit-dashed" cx="60" cy="60" r="86"/>
+              <circle cx="60" cy="60" r="52" fill="#c9a27e"/>
+              <g clip-path="url(#pluto-clip)">
+                <path d="M2 70 C18 60 30 74 44 68 C52 65 54 76 46 84 C34 94 14 92 2 86 Z" fill="#8a6548" opacity="0.75"/>
+                <path d="M22 18 C40 6 80 6 98 20 C84 26 70 22 58 26 C44 30 32 24 22 18 Z" fill="#b98a66" opacity="0.7"/>
+                <path d="M74 50 C80 42 93 44 95 55 C97 66 86 76 76 88 C66 79 55 72 54 62 C53 52 66 46 74 50 Z" fill="#efe3d3"/>
+                <path d="M74 50 C70 58 70 68 76 88 C66 79 55 72 54 62 C53 52 66 46 74 50 Z" fill="#fbf5ec" opacity="0.55"/>
+                <circle cx="34" cy="44" r="4" fill="#a67d5c" opacity="0.6"/>
+                <circle cx="48" cy="34" r="2.2" fill="#a67d5c" opacity="0.5"/>
+                <circle cx="40" cy="98" r="3" fill="#a67d5c" opacity="0.5"/>
+                <circle cx="92" cy="86" r="2.4" fill="#a67d5c" opacity="0.45"/>
+                <circle cx="60" cy="60" r="52" fill="url(#pluto-light)"/>
+              </g>
+            </g>
+
+            <!-- Referencia: la órbita baja circular -->
+            <path id="leo" class="orbit-dashed leo"/>
+            <text id="leo-label" class="leo-label" text-anchor="end">órbita baja · 7,9 km/s</text>
+
+            <!-- Planeta: solo asoma el horizonte -->
+            <circle id="planet-haze" class="planet-haze"/>
+            <circle id="planet" class="planet" fill="url(#planet-fill)"/>
+            <circle id="planet-limb" class="planet-limb"/>
+            <g id="pad" class="pad">
+              <path d="M-12 0 H12"/>
+              <path class="pad-tower" d="M-10 0 V-19 M-10 -13 H-5"/>
+            </g>
+
+            <path id="incoming" class="traj traj--incoming"/>
+            <path id="traj" class="traj"/>
+            <circle id="impact" class="impact" r="7"/>
+
+            <g id="rocket" class="rocket">
+              <g id="rocket-body">
+                <g class="rocket-flame">
+                  <path d="M17 66 C17 78 21 86 24 94 C27 86 31 78 31 66 Z" fill="#ff7a3d"/>
+                  <path d="M20.5 66 C20.5 73 22.5 78 24 83 C25.5 78 27.5 73 27.5 66 Z" fill="#ffd9a8"/>
+                </g>
+                <path d="M14 46 L5 64 L5 69 L15 63 Z" fill="#c9a27e"/>
+                <path d="M34 46 L43 64 L43 69 L33 63 Z" fill="#c9a27e"/>
+                <path d="M18 62 H30 L28.5 68 H19.5 Z" fill="#8b949e"/>
+                <path d="M24 3 C33 13 36 27 36 42 V60 C36 62 34.5 63 33 63 H15 C13.5 63 12 62 12 60 V42 C12 27 15 13 24 3 Z" fill="#f4f6f8"/>
+                <path d="M24 3 C33 13 36 27 36 42 V60 C36 62 34.5 63 33 63 H27 V42 C27 26 26 13 24 3 Z" fill="#cfd6dd"/>
+                <path d="M12 50 H36 V54 H12 Z" fill="#c9a27e"/>
+                <circle cx="24" cy="31" r="6" fill="#161b22" stroke="#8b949e" stroke-width="1.5"/>
+                <path d="M20.5 29.5 A4 4 0 0 1 24.5 27" fill="none" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="gauge" aria-hidden="true">
+          <div class="gauge-zones">
+            <span data-zone="suborbital">suborbital</span>
+            <span data-zone="orbit">órbita</span>
+            <span data-zone="escape">escape</span>
+          </div>
+          <div class="gauge-track">
+            <span class="gauge-clip"><i class="gauge-fill" id="gauge-fill"></i></span>
+            <i class="gauge-tick" data-at="orbit"></i>
+            <i class="gauge-tick" data-at="escape"></i>
+            <i class="gauge-needle" id="gauge-needle"><i></i></i>
+          </div>
+          <div class="gauge-scale mono">
+            <span data-at="zero">0</span>
+            <span data-at="orbit">7,9</span>
+            <span data-at="escape">11,2</span>
+            <span data-at="max">22,4 km/s</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="gen panel" aria-label="Generador de contraseñas">
+        <div class="gen-head">
+          <span class="console">contraseña</span>
+          <span class="chip" id="state">suborbital</span>
+        </div>
+
+        <div class="pass" role="group" aria-label="Contraseña generada">
+          <p class="pass-text mono" id="password" data-size="m" translate="no"></p>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn" id="regen">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M19.8 3.6v4.2h-4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            regenerar
+          </button>
+          <button type="button" class="btn btn--accent" id="copy">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 5.5v-.2a1.8 1.8 0 0 0-1.8-1.8H6.3a1.8 1.8 0 0 0-1.8 1.8v7.4a1.8 1.8 0 0 0 1.8 1.8h.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span id="copy-label">copiar</span>
+          </button>
+        </div>
+        <p class="sr-only" id="announce" aria-live="polite"></p>
+
+        <dl class="readout">
+          <div class="readout-item">
+            <dt>entropía</dt>
+            <dd class="mono"><b id="bits">0,0</b> bits</dd>
+          </div>
+          <div class="readout-item">
+            <dt>velocidad</dt>
+            <dd class="mono"><b id="speed">0,0</b> km/s</dd>
+          </div>
+          <div class="readout-item">
+            <dt>alfabeto</dt>
+            <dd class="mono"><b id="alphabet">0</b> car.</dd>
+          </div>
+        </dl>
+
+        <div class="field">
+          <div class="field-head">
+            <label for="length">longitud</label>
+            <output class="mono" id="length-value" for="length">16</output>
+          </div>
+          <input type="range" id="length" min="4" max="64" step="1" value="16">
+        </div>
+
+        <fieldset class="opts">
+          <legend class="sr-only">Tipos de caracteres</legend>
+          <label class="opt">
+            <input type="checkbox" class="opt-input" id="opt-lower" data-type="lower" checked>
+            <span class="opt-face"><i class="opt-led c-lower"></i><span class="opt-name">minúsculas</span><span class="opt-sample mono c-lower" aria-hidden="true">abc</span></span>
+          </label>
+          <label class="opt">
+            <input type="checkbox" class="opt-input" id="opt-upper" data-type="upper" checked>
+            <span class="opt-face"><i class="opt-led c-upper"></i><span class="opt-name">mayúsculas</span><span class="opt-sample mono c-upper" aria-hidden="true">ABC</span></span>
+          </label>
+          <label class="opt">
+            <input type="checkbox" class="opt-input" id="opt-digits" data-type="digits" checked>
+            <span class="opt-face"><i class="opt-led c-digits"></i><span class="opt-name">números</span><span class="opt-sample mono c-digits" aria-hidden="true">123</span></span>
+          </label>
+          <label class="opt">
+            <input type="checkbox" class="opt-input" id="opt-symbols" data-type="symbols" checked>
+            <span class="opt-face"><i class="opt-led c-symbols"></i><span class="opt-name">símbolos</span><span class="opt-sample mono c-symbols" aria-hidden="true">#$&amp;</span></span>
+          </label>
+          <label class="opt opt--wide">
+            <input type="checkbox" class="opt-input" id="opt-ambiguous">
+            <span class="opt-face"><i class="opt-led"></i><span class="opt-name">excluir ambiguos</span><span class="opt-sample mono" aria-hidden="true">0O1lI</span></span>
+          </label>
+        </fieldset>
+
+        <p class="gen-note console">cada bit suma <b>0,14 km/s</b> · <b>80 bits</b> = <b>11,2 km/s</b>: unos 19 000 años de media a 10¹² intentos por segundo · por debajo de <b>7,9 km/s</b> (56 bits, lo que tenía DES) ni se entra en órbita</p>
+      </section>
+    </main>
+
+    <footer class="page-foot">
+      <span>escape-velocity · serie Plutón</span>
+      <span>hecho por <a href="https://github.com/diegocedenno">diegocedenno</a> · MIT</span>
+    </footer>
+  </div>
+</body>
+</html>

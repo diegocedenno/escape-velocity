@@ -1,0 +1,658 @@
+/* escape-velocity — estilos propios. Los tokens y la base viven en assets/tokens.css */
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+  grid-template-areas: "stage gen";
+  align-items: center;
+  gap: var(--s-6);
+}
+
+/* Un color por régimen de vuelo; lo comparten trayectoria, velocímetro y etiqueta. */
+[data-state="suborbital"] {
+  --state: var(--alert);
+}
+
+[data-state="orbit"] {
+  --state: var(--cold);
+}
+
+[data-state="escape"] {
+  --state: var(--accent);
+}
+
+/* Colores por tipo de carácter: contraseña y leyenda de los interruptores. */
+.c-lower {
+  color: var(--text);
+}
+
+.c-upper {
+  color: var(--accent);
+}
+
+.c-digits {
+  color: var(--cold);
+}
+
+.c-symbols {
+  color: var(--alert);
+  color: color-mix(in srgb, var(--alert) 78%, var(--text));
+}
+
+/* ---------- escena ---------- */
+
+.stage {
+  grid-area: stage;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+  height: clamp(380px, calc(100dvh - 190px), 640px);
+}
+
+.stage-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Los bordes se funden con el cielo: el cohete sale del encuadre sin cortes secos. */
+.stage-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 6%, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 6%, #000 86%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.stage-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 2px var(--s-2) 2px 0;
+  background: var(--bg); /* tapa las estrellas que caerían justo detrás del texto */
+  pointer-events: none;
+}
+
+.planet-haze {
+  fill: none;
+  stroke: var(--cold);
+  stroke-width: 16;
+  opacity: 0.07;
+}
+
+.planet-limb {
+  fill: none;
+  stroke: var(--cold);
+  stroke-width: 1.25;
+  opacity: 0.6;
+}
+
+.pad path {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.pad .pad-tower {
+  stroke-width: 1.5;
+}
+
+.leo {
+  stroke: var(--border-strong);
+}
+
+.leo-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  fill: var(--text-2);
+}
+
+.pluto {
+  opacity: 0.45;
+  transition: opacity var(--t-slow) var(--ease-out);
+}
+
+.stage[data-state="escape"] .pluto {
+  opacity: 1;
+}
+
+.traj {
+  fill: none;
+  stroke: var(--state);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0.1 7;
+  transition:
+    stroke var(--t-med) var(--ease-out),
+    opacity var(--t-med) var(--ease-out);
+}
+
+.traj--incoming {
+  opacity: 0;
+}
+
+.stage[data-state="orbit"] .traj--incoming {
+  opacity: 1;
+}
+
+.impact {
+  fill: none;
+  stroke: var(--alert);
+  stroke-width: 1.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.rocket {
+  transition: opacity 240ms var(--ease-out);
+}
+
+.rocket.is-hidden {
+  opacity: 0;
+}
+
+.rocket-flame {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  transition: opacity 200ms var(--ease-out);
+  animation: flame-flicker 170ms var(--ease-in-out) infinite alternate;
+}
+
+.rocket.is-burning .rocket-flame {
+  opacity: 1;
+}
+
+/* Con movimiento reducido la animación termina en el último fotograma: llama entera. */
+@keyframes flame-flicker {
+  from {
+    transform: scaleY(0.76);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ---------- velocímetro ---------- */
+
+.gauge {
+  --orbit: 35.268%; /* 7,9 de 22,4 km/s */
+  --escape: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.gauge-zones,
+.gauge-scale {
+  position: relative;
+  height: 1.5em;
+}
+
+.gauge-zones span,
+.gauge-scale span {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  transition: color var(--t-med) var(--ease-out);
+}
+
+.gauge-zones [data-zone="suborbital"] {
+  left: calc(var(--orbit) / 2);
+}
+
+.gauge-zones [data-zone="orbit"] {
+  left: calc((var(--orbit) + var(--escape)) / 2);
+}
+
+.gauge-zones [data-zone="escape"] {
+  left: 75%;
+}
+
+.stage[data-state="suborbital"] [data-zone="suborbital"],
+.stage[data-state="orbit"] [data-zone="orbit"],
+.stage[data-state="escape"] [data-zone="escape"] {
+  color: var(--state);
+}
+
+.gauge-track {
+  position: relative;
+  height: 6px;
+  margin: 5px 0 7px;
+}
+
+.gauge-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.gauge-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--state);
+  opacity: 0.8;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition:
+    transform var(--t-slow) var(--ease-out),
+    background-color var(--t-med) var(--ease-out);
+}
+
+.gauge-tick {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+  background: var(--text-2);
+}
+
+.gauge-tick[data-at="orbit"],
+.gauge-scale [data-at="orbit"] {
+  left: var(--orbit);
+}
+
+.gauge-tick[data-at="escape"],
+.gauge-scale [data-at="escape"] {
+  left: var(--escape);
+}
+
+/* La aguja ocupa toda la pista y se desplaza hacia la izquierda desde el final:
+   así su caja nunca asoma por la derecha ni ensancha la página. */
+.gauge-needle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 0;
+  transform: translateX(-100%);
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+.gauge-needle i {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--bg);
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.gauge-scale [data-at="zero"] {
+  left: 0;
+  transform: none;
+}
+
+.gauge-scale [data-at="max"] {
+  right: 0;
+  transform: none;
+}
+
+/* ---------- generador ---------- */
+
+.gen {
+  grid-area: gen;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  min-width: 0;
+  padding: var(--s-4);
+}
+
+.gen-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--state);
+  transition: color var(--t-med) var(--ease-out);
+}
+
+.chip::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pass {
+  display: grid;
+  align-items: center;
+  min-height: 6rem;
+  padding: var(--s-3) var(--s-4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.pass-text {
+  min-width: 0;
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+.pass-text[data-size="m"] {
+  font-size: 1.375rem;
+}
+
+.pass-text[data-size="s"] {
+  font-size: 1.125rem;
+}
+
+.pass-text[data-size="xs"] {
+  font-size: 1rem;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.actions .btn {
+  min-width: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.actions .btn svg {
+  flex: none;
+}
+
+.readout {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: 0;
+}
+
+.readout dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+
+.readout dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.readout dd b {
+  font-size: 1.375rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+
+.field-head output {
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Range nativo: 44 px de alto para el dedo, pista fina a la vista. Los márgenes
+   negativos devuelven al panel el aire que esa altura le quita. */
+.field input[type="range"] {
+  --fill: 20%;
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: -6px 0 -8px;
+  padding: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.field input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent) var(--fill), var(--border) var(--fill));
+}
+
+.field input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--text);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.field input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+.field input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.field input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.field input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.field input[type="range"]:focus-visible {
+  outline: none;
+}
+
+.field input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--cold);
+}
+
+.field input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 2px var(--cold);
+}
+
+.opts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.opt {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.opt--wide {
+  grid-column: 1 / -1;
+}
+
+/* El checkbox nativo cubre toda la ficha, invisible: conserva teclado y semántica. */
+.opt-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.opt-face {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition:
+    background-color var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out);
+}
+
+.opt-led {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+
+.opt-sample {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.opt-input:not(:checked) + .opt-face .opt-sample {
+  color: var(--text-2);
+}
+
+.opt-input:checked + .opt-face {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.opt-input:checked + .opt-face .opt-led {
+  background: currentColor;
+}
+
+.opt:hover .opt-face {
+  border-color: var(--border-strong);
+}
+
+.opt-input:focus-visible + .opt-face {
+  outline: 2px solid var(--cold);
+  outline-offset: 2px;
+}
+
+.gen-note {
+  line-height: 1.65;
+}
+
+.console.is-error,
+.console.is-error b {
+  color: var(--alert);
+}
+
+/* ---------- pantallas estrechas ---------- */
+
+@media (max-width: 900px) {
+  .page {
+    gap: var(--s-4);
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "stage"
+      "gen";
+    align-items: start;
+    gap: var(--s-4);
+  }
+
+  .stage {
+    height: clamp(270px, 36dvh, 350px);
+    gap: var(--s-2);
+  }
+
+  /* En pantallas estrechas un escape muy vertical cruzaría la telemetría: va en su propia fila. */
+  .stage-hud {
+    position: static;
+  }
+
+  .gen {
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+    gap: var(--s-3);
+  }
+
+  .pass {
+    min-height: 5.5rem;
+    padding: var(--s-3);
+  }
+}
+
+@media (max-width: 420px) {
+  .leo-label {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
+  .opt-face {
+    padding: 0 10px;
+  }
+}
