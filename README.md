@@ -4,7 +4,9 @@
 >
 > Un generador de contraseñas donde la fuerza es un lanzamiento: la entropía se convierte en la velocidad de un cohete que intenta alcanzar la velocidad de escape terrestre, 11,2 km/s.
 
-![escape-velocity preview](docs/preview.png)
+**[Live demo · Demo en vivo →](https://diegocedenno.github.io/escape-velocity/)**
+
+[![escape-velocity preview](docs/preview.png)](https://diegocedenno.github.io/escape-velocity/)
 
 **[English](#english)** · **[Español](#español)**
 
