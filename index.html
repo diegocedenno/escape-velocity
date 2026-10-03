@@ -7,6 +7,7 @@
   <meta name="description" content="Generador de contraseñas: la entropía se convierte en la velocidad de un cohete que intenta alcanzar los 11,2 km/s de escape.">
   <meta name="theme-color" content="#0d1117">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script src="assets/theme.js"></script>
   <link rel="stylesheet" href="assets/tokens.css">
   <link rel="stylesheet" href="style.css">
   <script defer src="assets/starfield.js"></script>
@@ -21,15 +22,21 @@
       <a class="brand" href="./" aria-label="escape-velocity, inicio">
         <svg viewBox="0 0 32 32" aria-hidden="true">
           <circle cx="5" cy="33" r="15" fill="#58a6ff"/>
-          <path d="M14 22 C17.5 15.5 20.5 12 24 9" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="1.5 3.2" stroke-linecap="round"/>
+          <path class="brand-path" d="M14 22 C17.5 15.5 20.5 12 24 9" fill="none" stroke-width="1.5" stroke-dasharray="1.5 3.2" stroke-linecap="round"/>
           <g transform="translate(26.2 6.8) rotate(48)">
-            <path d="M-1.6 3.2 L0 8 L1.6 3.2 Z" fill="#ff7a3d"/>
-            <path d="M0 -5.4 C2.6 -2.8 2.8 0.6 2.8 3.4 H-2.8 C-2.8 0.6 -2.6 -2.8 0 -5.4 Z" fill="#f4f6f8"/>
+            <path class="brand-flame" d="M-1.6 3.2 L0 8 L1.6 3.2 Z"/>
+            <path class="brand-rocket" d="M0 -5.4 C2.6 -2.8 2.8 0.6 2.8 3.4 H-2.8 C-2.8 0.6 -2.6 -2.8 0 -5.4 Z"/>
           </g>
         </svg>
         escape-velocity
       </a>
       <p class="console" id="status" role="status">status: <b>en la plataforma</b></p>
+      <button type="button" class="theme-toggle" data-theme-toggle role="switch" aria-checked="false" aria-label="Modo claro">
+        <span class="theme-toggle-thumb" aria-hidden="true">
+          <svg class="theme-toggle-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor"/></svg>
+          <svg class="theme-toggle-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
     </header>
 
     <main class="layout">
@@ -44,12 +51,12 @@
               <radialGradient id="pluto-light" cx="36%" cy="30%" r="80%">
                 <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
                 <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
-                <stop offset="1" stop-color="#0d1117" stop-opacity="0.5"/>
+                <stop class="pluto-shade" offset="1" stop-opacity="0.5"/>
               </radialGradient>
               <radialGradient id="planet-fill" gradientUnits="userSpaceOnUse" cx="334" cy="1244" r="768">
-                <stop id="planet-stop-deep" offset="0.84" stop-color="#0d1117"/>
-                <stop id="planet-stop-mid" offset="0.96" stop-color="#161b22"/>
-                <stop offset="1" stop-color="#222c38"/>
+                <stop id="planet-stop-deep" class="planet-deep" offset="0.84"/>
+                <stop id="planet-stop-mid" class="planet-mid" offset="0.96"/>
+                <stop class="planet-edge" offset="1"/>
               </radialGradient>
             </defs>
 
@@ -90,15 +97,16 @@
             <g id="rocket" class="rocket">
               <g id="rocket-body">
                 <g class="rocket-flame">
-                  <path d="M17 66 C17 78 21 86 24 94 C27 86 31 78 31 66 Z" fill="#ff7a3d"/>
-                  <path d="M20.5 66 C20.5 73 22.5 78 24 83 C25.5 78 27.5 73 27.5 66 Z" fill="#ffd9a8"/>
+                  <path class="rocket-fire" d="M17 66 C17 78 21 86 24 94 C27 86 31 78 31 66 Z"/>
+                  <path class="rocket-fire-core" d="M20.5 66 C20.5 73 22.5 78 24 83 C25.5 78 27.5 73 27.5 66 Z"/>
                 </g>
-                <path d="M14 46 L5 64 L5 69 L15 63 Z" fill="#c9a27e"/>
-                <path d="M34 46 L43 64 L43 69 L33 63 Z" fill="#c9a27e"/>
-                <path d="M18 62 H30 L28.5 68 H19.5 Z" fill="#8b949e"/>
-                <path d="M24 3 C33 13 36 27 36 42 V60 C36 62 34.5 63 33 63 H15 C13.5 63 12 62 12 60 V42 C12 27 15 13 24 3 Z" fill="#f4f6f8"/>
+                <path class="rocket-fin" d="M14 46 L5 64 L5 69 L15 63 Z"/>
+                <path class="rocket-fin" d="M34 46 L43 64 L43 69 L33 63 Z"/>
+                <path class="rocket-nozzle" d="M18 62 H30 L28.5 68 H19.5 Z"/>
+                <path class="rocket-hull" d="M24 3 C33 13 36 27 36 42 V60 C36 62 34.5 63 33 63 H15 C13.5 63 12 62 12 60 V42 C12 27 15 13 24 3 Z"/>
                 <path d="M24 3 C33 13 36 27 36 42 V60 C36 62 34.5 63 33 63 H27 V42 C27 26 26 13 24 3 Z" fill="#cfd6dd"/>
-                <path d="M12 50 H36 V54 H12 Z" fill="#c9a27e"/>
+                <path class="rocket-fin" d="M12 50 H36 V54 H12 Z"/>
+                <path class="rocket-outline" d="M24 3 C33 13 36 27 36 42 V60 C36 62 34.5 63 33 63 H15 C13.5 63 12 62 12 60 V42 C12 27 15 13 24 3 Z"/>
                 <circle cx="24" cy="31" r="6" fill="#161b22" stroke="#8b949e" stroke-width="1.5"/>
                 <path d="M20.5 29.5 A4 4 0 0 1 24.5 27" fill="none" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round"/>
               </g>

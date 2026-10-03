@@ -40,6 +40,40 @@
   color: color-mix(in srgb, var(--alert) 78%, var(--text));
 }
 
+/* Colores propios con su par claro. El disco del planeta se apaga hasta fundirse
+   con la página: en oscuro es una masa en sombra; sobre papel, una aguada azulada.
+   El corazón de la llama, casi blanco de noche, sobre papel necesita cuerpo. */
+:root {
+  --planet-mid: #161b22;
+  --planet-edge: #222c38;
+  --flame-core: #ffd9a8;
+}
+
+:root[data-theme="light"] {
+  --planet-mid: #e5e9ed;
+  --planet-edge: #cfdbea;
+  --flame-core: #ff9a57;
+}
+
+/* ---------- marca ---------- */
+
+.brand-path {
+  stroke: var(--text-2);
+}
+
+.brand-flame {
+  fill: var(--alert);
+}
+
+/* A este tamaño no cabe un contorno: en claro el cohete es tinta. */
+.brand-rocket {
+  fill: var(--rocket);
+}
+
+:root[data-theme="light"] .brand-rocket {
+  fill: var(--text);
+}
+
 /* ---------- escena ---------- */
 
 .stage {
@@ -83,6 +117,18 @@
   padding: 2px var(--s-2) 2px 0;
   background: var(--bg); /* tapa las estrellas que caerían justo detrás del texto */
   pointer-events: none;
+}
+
+.planet-deep {
+  stop-color: var(--bg);
+}
+
+.planet-mid {
+  stop-color: var(--planet-mid);
+}
+
+.planet-edge {
+  stop-color: var(--planet-edge);
 }
 
 .planet-haze {
@@ -130,6 +176,17 @@
   opacity: 1;
 }
 
+/* Sombra del limbo de Plutón: se funde con el fondo en oscuro; sobre papel es
+   una sombra cálida y más leve. */
+.pluto-shade {
+  stop-color: #0d1117;
+}
+
+:root[data-theme="light"] .pluto-shade {
+  stop-color: #5b4330;
+  stop-opacity: 0.38;
+}
+
 .traj {
   fill: none;
   stroke: var(--state);
@@ -166,6 +223,35 @@
 
 .rocket.is-hidden {
   opacity: 0;
+}
+
+/* Cohete blanco: en modo claro lo sostiene un contorno de tinta. El contorno va
+   en un trazo aparte, por encima de la sombra y la franja, para que no lo tapen. */
+.rocket-hull {
+  fill: var(--rocket);
+}
+
+.rocket-outline {
+  fill: none;
+  stroke: var(--rocket-line);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.rocket-fin {
+  fill: var(--accent);
+}
+
+.rocket-nozzle {
+  fill: var(--text-2);
+}
+
+.rocket-fire {
+  fill: var(--alert);
+}
+
+.rocket-fire-core {
+  fill: var(--flame-core);
 }
 
 .rocket-flame {
