@@ -20,6 +20,7 @@
 - Shows its entropy in bits and turns it into a speed. Below 7.9 km/s the rocket flies a suborbital hop and falls back; from 7.9 km/s it stays in orbit; at 11.2 km/s it escapes towards Pluto.
 - The dotted trajectory, the rocket and the speed gauge react smoothly to every change.
 - Regenerate with one button, copy with another. Your settings survive a reload; the password never touches storage.
+- A switch in the header flips between dark and light mode: the same launch redrawn as a star chart on paper. The choice is remembered and shared across the Plutón series.
 
 ### What makes it technically interesting
 
@@ -61,6 +62,7 @@ It also works as-is on GitHub Pages.
 - Muestra su entropía en bits y la convierte en velocidad. Por debajo de 7,9 km/s el cohete hace un salto suborbital y vuelve a caer; desde 7,9 km/s queda en órbita; a 11,2 km/s escapa rumbo a Plutón.
 - La trayectoria punteada, el cohete y el velocímetro reaccionan con suavidad a cada cambio.
 - Un botón regenera y otro copia. La configuración sobrevive a una recarga; la contraseña nunca se guarda.
+- Un interruptor en la cabecera alterna entre modo oscuro y claro: el mismo lanzamiento redibujado como carta estelar sobre papel. La elección se recuerda y se comparte entre los proyectos de la serie Plutón.
 
 ### Qué lo hace interesante técnicamente
 
